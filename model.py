@@ -64,7 +64,16 @@ class CNN:
     def cross_entropy(self, y_pred, y_true, eps = 1e-9):
         return -np.mean(np.sum(y_true * np.log(y_pred + eps) , axis = 1))
     
+    def backward(self, x, y_true, y_pred):
+        batch_size = x.shape[0]
+        dz = (y_pred - y_true) / batch_size
+        dw = np.dot(x.T, dz)
+        db = np.sum(dz, axis = 0)
+        return dw, db
     
-
+    def gd(self, dw, db, lr = 0.01):
+        self.weight -= lr * dw
+        self.bias -= lr * db
+        
 
 
