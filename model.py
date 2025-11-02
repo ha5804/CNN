@@ -24,7 +24,9 @@ class CNN:
         
         return outputs
         
-
+    def activation(self, conv_outputs):
+        return np.maximum(0, conv_outputs)
+    
 
 
 
