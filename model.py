@@ -27,6 +27,22 @@ class CNN:
     def activation(self, conv_outputs):
         return np.maximum(0, conv_outputs)
     
+    def max_pooling(input , pooling_size = 2, stride = 2):
+        #input = output of convolution
+        #stride is general same pooling_size
+        batch_size , h, w = input.shape
+        out_h = (h - pooling_size) // stride + 1
+        out_w = (w - pooling_size) // stride + 1
+
+        outputs = np.zeros((batch_size, out_h, out_w))
+        for b in range(batch_size):
+            for i in range(0, out_h):
+                for j in range(0, out_w):
+                    region = input[b, i * stride : i * stride + pooling_size, j * stride : j * stride + pooling_size]
+                    outputs[b,i,j] = np.max(region)
+        return outputs
+
+    
 
 
 
