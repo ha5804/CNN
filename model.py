@@ -58,8 +58,12 @@ class CNN:
         act_out = self.activation(conv_out)
         pool_out = self.max_pooling(act_out, p_size , stride_p)
         f_result = self.fullyconnected_layer(pool_out)
-        return f_result
-        
+        y_pred = np.argmax(f_result, axis = 1)
+        return f_result, y_pred
+
+    def cross_entropy(self, y_pred, y_true, eps = 1e-9):
+        return -np.mean(np.sum(y_true * np.log(y_pred + eps) , axis = 1))
+    
     
 
 
