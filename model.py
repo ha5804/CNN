@@ -1,10 +1,11 @@
 import numpy as np
 
 class CNN:
-    def __init__(self,input_data , kernel_size = (3,3), eps = 1e-9):
-        self.kernel = np.zeros((kernel_size)) + eps
-        self.weight = np.zeros(((input_data.reshape(input_data.shape[0], -1)).shape[1], 4))
-    
+    def __init__(self, input_data , kernel_size = (3,3), eps = 1e-9, num_classes = 4):
+        self.kernel = np.random.randn((kernel_size)) + eps
+        self.weight = np.random.randn(((input_data.reshape(input_data.shape[0], -1)).shape[1], num_classes))
+        self.bias = np.zeros(num_classes)
+        
     def convolution(self, input, stride = 1):
         batch_size , H, W = input.shape
         kh, kw = self.kernel.shape
@@ -27,7 +28,7 @@ class CNN:
     def activation(self, conv_outputs):
         return np.maximum(0, conv_outputs)
     
-    def max_pooling(input , pooling_size = 2, stride = 2):
+    def max_pooling(self, input , pooling_size = 2, stride = 2):
         #input = output of convolution
         #stride is general same pooling_size
         batch_size , h, w = input.shape
@@ -42,6 +43,15 @@ class CNN:
                     outputs[b,i,j] = np.max(region)
         return outputs
 
+    def fullyconnected_layer(self, input):
+        flatten = input.reshape(input.shape[0], -1)
+        logits = np.dot(flatten, self.weight)
+
+        exp = np.exp(logits - np.max(logits, axis = 1, keepdims = True))
+        softmax = exp / np.sum(exp , axis = 1, keepdims = True)
+        return softmax
+
+    def forword(self):
 
     
 
