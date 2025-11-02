@@ -1,11 +1,12 @@
 import numpy as np
 
 class CNN:
-    def __init__(self, input_data , kernel_size = (3,3), eps = 1e-9, num_classes = 4):
+    def __init__(self, input_data , kernel_size=(3,3), eps=1e-9, num_classes=4):
         self.input_data = input_data
-        self.kernel = np.random.randn((kernel_size)) + eps
-        self.weight = np.random.randn(((input_data.reshape(input_data.shape[0], -1)).shape[1], num_classes))
+        self.kernel = np.random.randn(*kernel_size) * eps   # ✅ 수정
+        self.weight = np.random.randn(25, 4) * 0.01
         self.bias = np.zeros(num_classes)
+
 
     def convolution(self, input, stride = 1):
         batch_size , H, W = input.shape
@@ -52,7 +53,7 @@ class CNN:
         softmax = exp / np.sum(exp , axis = 1, keepdims = True)
         return softmax
 
-    def forword(self ,stride_k = 1, p_size = 2, stride_p = 2):
+    def forward(self ,stride_k = 1, p_size = 2, stride_p = 2):
         conv_out = self.convolution(self.input_data, stride_k)
         act_out = self.activation(conv_out)
         pool_out = self.max_pooling(act_out, p_size , stride_p)
