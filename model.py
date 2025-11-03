@@ -93,6 +93,5 @@ class CNN:
         self.weight -= lr * dw
         self.bias -= lr * db
 
-    def conv_backward(self, x, y_true , y_pred):
         
 
