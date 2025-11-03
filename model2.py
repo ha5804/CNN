@@ -9,10 +9,10 @@ class CNN(nn.Module):
 
         self.conv1 = nn.Conv2d(1, 8, 3, 1)
         self.conv2 = nn.Conv2d(8, 16, 3, 1)
-        self.conv3 = nn.Conv3d(16, 32, 3, 1)
+        self.conv3 = nn.Conv2d(16, 32, 3, 1)
 
         self.pool = nn.MaxPool2d(2, 2)
-        self.fc = nn.Linear(32 * 6 * 6 , num_classes)
+        self.fc = nn.Linear(32 * 3 * 3 , num_classes)
     
     def forward(self, x):
         x = F.relu(self.conv1(x))
