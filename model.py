@@ -3,12 +3,13 @@ import numpy as np
 class CNN:
     def __init__(self, input_data , kernel_size=(3,3), eps=1e-9, num_classes=4):
         self.input_data = input_data
-        self.kernel = np.random.randn(*kernel_size) * eps   # ✅ 수정
-        self.weight = np.random.randn(25, 4) * 0.01
-        self.bias = np.zeros(num_classes)
-
+        self.kernel = np.random.randn(*kernel_size) * eps   
+        self.weight = None
+        self.bias = None
+        self.last_flatten = None
 
     def convolution(self, input, stride = 1):
+        input = np.pad(input, ((0,0),(1,1),(1,1)), mode = 'constant', constant_values = 0)
         batch_size , H, W = input.shape
         kh, kw = self.kernel.shape
 
@@ -47,7 +48,14 @@ class CNN:
 
     def fullyconnected_layer(self, input):
         flatten = input.reshape(input.shape[0], -1)
-        logits = np.dot(flatten, self.weight)
+        self.last_flatten = flatten
+
+        if self.weight is None:
+            in_dim = flatten.shape[1]
+            self.weight = np.random.randn(in_dim , 4)
+            self.bias = np.zeros(4)
+        logits = np.dot(flatten, self.weight) + self.bias
+
 
         exp = np.exp(logits - np.max(logits, axis = 1, keepdims = True))
         softmax = exp / np.sum(exp , axis = 1, keepdims = True)
@@ -56,13 +64,23 @@ class CNN:
     def forward(self ,stride_k = 1, p_size = 2, stride_p = 2):
         conv_out = self.convolution(self.input_data, stride_k)
         act_out = self.activation(conv_out)
-        pool_out = self.max_pooling(act_out, p_size , stride_p)
+        conv2_out = self.convolution(act_out , stride_k)
+        act2_out = self.activation(conv2_out)
+        conv3_out = self.convolution(act2_out, stride_k)
+        act3_out = self.activation(conv3_out)
+        pool_out = self.max_pooling(act3_out, p_size , stride_p)
         f_result = self.fullyconnected_layer(pool_out)
         y_pred = np.argmax(f_result, axis = 1)
         return f_result, y_pred
 
-    def cross_entropy(self, y_pred, y_true, eps = 1e-9):
-        return -np.mean(np.sum(y_true * np.log(y_pred + eps) , axis = 1))
+    def cross_entropy(self, y_pred, y_true, eps=1e-9):
+        # y_true가 정수 라벨이면 one-hot으로 변환
+        if y_true.ndim == 1:
+            y_true = np.eye(y_pred.shape[1])[y_true.astype(int)]
+
+        loss = -np.mean(np.sum(y_true * np.log(y_pred + eps), axis=1))
+        return y_true, loss
+
     
     def backward(self, x, y_true, y_pred):
         batch_size = x.shape[0]
@@ -71,9 +89,10 @@ class CNN:
         db = np.sum(dz, axis = 0)
         return dw, db
     
-    def gd(self, dw, db, lr = 0.01):
+    def gd(self, dw, db, lr = 0.1):
         self.weight -= lr * dw
         self.bias -= lr * db
-        
 
+    def conv_backward(self, x, y_true , y_pred):
+        
 
