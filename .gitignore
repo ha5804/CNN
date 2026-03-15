@@ -1,0 +1,19 @@
+# dataset
+data/
+
+# model weights
+*.pth
+*.pt
+
+# numpy data
+*.npy
+
+# python
+__pycache__/
+*.pyc
+
+# jupyter
+.ipynb_checkpoints/
+
+# mac
+.DS_Store
