@@ -1,5 +1,11 @@
 # dataset
 data/
+*.tar.gz
+*.npy
+*.pth
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
 
 # model weights
 *.pth
